@@ -22,12 +22,22 @@ public class Day1 extends DayBase {
 
     @Override
     public Long solvePartOne() {
-        return partOne();
+        long result = 0L;
+        firstList.sort(Long::compareTo);
+        secondList.sort(Long::compareTo);
+        for (int i = 0; i < firstList.size(); i++) {
+            result += Math.abs(firstList.get(i) - secondList.get(i));
+        }
+        return result;
     }
 
     @Override
     public Long solvePartTwo() {
-        return partTwo();
+        AtomicLong result = new AtomicLong(0L);
+        firstList.forEach(x -> {
+            result.addAndGet(secondList.stream().filter(y -> y.equals(x)).count() * x);
+        });
+        return result.get();
     }
 
     void parseData(List<String> data) {
@@ -36,26 +46,6 @@ public class Day1 extends DayBase {
             firstList.add(item.first());
             secondList.add(item.second());
         });
-    }
-
-    long partOne() {
-        long result = 0L;
-        firstList.sort(Long::compareTo);
-        secondList.sort(Long::compareTo);
-
-        for (int i = 0; i < firstList.size(); i++) {
-            result += Math.abs(firstList.get(i) - secondList.get(i));
-        }
-        return result;
-    }
-
-    long partTwo() {
-       AtomicLong result = new AtomicLong(0L);
-
-       firstList.forEach(x -> {
-           result.addAndGet(secondList.stream().filter(y -> y.equals(x)).count() * x);
-       });
-       return result.get();
     }
 
     Pair<Long, Long> processString(String input) {
