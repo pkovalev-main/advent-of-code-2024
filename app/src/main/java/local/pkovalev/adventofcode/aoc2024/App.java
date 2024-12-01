@@ -13,12 +13,21 @@ public class App
 {
     public static void main( String[] args )
     {
+        DayInterface day = new Day1();
+        day.init();
+
         var timeStart = Instant.now();
-        DayInterface day = new Day1_1();
-        var result = day.solveRiddle();
+        var result = day.solvePartOne();
         var timeEnd = Instant.now();
         var interval = timeEnd.toEpochMilli() - timeStart.toEpochMilli();
-        log.info("Done in {}.{} seconds", interval / 1000, String.format("%03d", interval % 1000));
+        log.info("Part I done in {}.{} seconds", interval / 1000, String.format("%03d", interval % 1000));
+        log.info("Result: [{}]", result);
+
+        timeStart = Instant.now();
+        result = day.solvePartTwo();
+        timeEnd = Instant.now();
+        interval = timeEnd.toEpochMilli() - timeStart.toEpochMilli();
+        log.info("Part II done in {}.{} seconds", interval / 1000, String.format("%03d", interval % 1000));
         log.info("Result: [{}]", result);
     }
 }

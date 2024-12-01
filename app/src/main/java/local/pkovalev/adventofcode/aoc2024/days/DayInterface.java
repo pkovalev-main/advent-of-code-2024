@@ -1,5 +1,7 @@
 package local.pkovalev.adventofcode.aoc2024.days;
 
 public interface DayInterface {
-    Long solveRiddle();
+    void init();
+    Long solvePartOne();
+    Long solvePartTwo();
 }
