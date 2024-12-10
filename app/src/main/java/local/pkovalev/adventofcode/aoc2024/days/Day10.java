@@ -1,5 +1,6 @@
 package local.pkovalev.adventofcode.aoc2024.days;
 
+import local.pkovalev.adventofcode.aoc2024.utils.MatrixPoint;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,11 +11,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class Day10 extends DayBase {
 
-    ArrayList<Point> starts = new ArrayList<>();
+    ArrayList<MatrixPoint> starts = new ArrayList<>();
 
     int mapRows = 0;
     int mapCols = 0;
@@ -30,7 +32,7 @@ public class Day10 extends DayBase {
     public Long solvePartOne() {
         AtomicLong result = new AtomicLong(0L);
         starts.forEach(start -> {
-            HashSet<Point> uniquePoints = new HashSet<>();
+            HashSet<MatrixPoint> uniquePoints = new HashSet<>();
             var list = pathsForPoint(start);
             var full = list.stream().filter(x -> x.size() == 10).toList();
             full.forEach(x ->{
@@ -53,17 +55,11 @@ public class Day10 extends DayBase {
     }
 
     void parseData(List<String> data) {
-        ArrayList<String> bordereData = new ArrayList<>(data.size());
-        bordereData.add(StringUtils.repeat('X', data.get(0).length()+2));
-        data.forEach(str -> {
-            bordereData.add("X" + str + "X");
-        });
-        bordereData.add(StringUtils.repeat('X', data.get(0).length()+2));
-        mapRows = bordereData.size();
-        mapCols = bordereData.get(0).length();
+        mapRows = data.size();
+        mapCols = data.get(0).length();
         map = new int[mapRows][mapCols];
         AtomicInteger currentRow = new AtomicInteger(0);
-        bordereData.forEach(row -> {
+        data.forEach(row -> {
             var arr = row.chars().map(x -> x - 48).toArray();
             map[currentRow.getAndIncrement()] = arr;
         });
@@ -73,15 +69,15 @@ public class Day10 extends DayBase {
         for (int row = 0; row < mapRows; row++) {
             for (int col = 0; col < mapCols; col++) {
                 if(map[row][col] == 0) {
-                    starts.add(new Point(row, col));
+                    starts.add(new MatrixPoint(row, col));
                 }
             }
         }
     }
 
-    ArrayList<ArrayList<Point>> pathsForPoint(Point point) {
+    ArrayList<ArrayList<MatrixPoint>> pathsForPoint(MatrixPoint point) {
         var steps = getPossibleWays(point);
-        ArrayList<ArrayList<Point>> ret = new ArrayList<>();
+        ArrayList<ArrayList<MatrixPoint>> ret = new ArrayList<>();
         steps.forEach( step -> {
             var list = pathsForPoint(step);
             list.forEach(item -> {
@@ -96,20 +92,10 @@ public class Day10 extends DayBase {
         return ret;
     }
 
-    List<Point> getPossibleWays(Point point) {
-        ArrayList<Point> possibleWays = new ArrayList<>();
-        if(map[(int)point.getX() + 1][(int)point.getY()] - map[(int)point.getX()][(int)point.getY()] == 1) {
-            possibleWays.add(new Point((int)point.getX() + 1, (int)point.getY()));
-        }
-        if(map[(int)point.getX() - 1][(int)point.getY()] - map[(int)point.getX()][(int)point.getY()] == 1) {
-            possibleWays.add(new Point((int)point.getX() - 1, (int)point.getY()));
-        }
-        if(map[(int)point.getX()][(int)point.getY() + 1] - map[(int)point.getX()][(int)point.getY()] == 1) {
-            possibleWays.add(new Point((int)point.getX(), (int)point.getY() + 1));
-        }
-        if(map[(int)point.getX()][(int)point.getY() - 1] - map[(int)point.getX()][(int)point.getY()] == 1) {
-            possibleWays.add(new Point((int)point.getX(), (int)point.getY()  - 1));
-        }
-        return possibleWays;
+    List<MatrixPoint> getPossibleWays(MatrixPoint point) {
+        return Stream.of(point.newAbove(), point.newBelow(), point.newLeft(), point.newRight())
+            .filter(x -> x.inside(mapRows, mapCols))
+            .filter(x -> map[x.getRow()][x.getCol()] - map[point.getRow()][point.getCol()] == 1)
+            .toList();
     }
 }
