@@ -10,6 +10,7 @@ dependencies {
     implementation(userLibs.logback)
     compileOnly(userLibs.lombok)
     annotationProcessor(userLibs.lombok)
+    implementation(userLibs.apachecommonlang)
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
