@@ -1,7 +1,11 @@
-package local.pkovalev.adventofcode.aoc2023.utils;
+package local.pkovalev.adventofcode.aoc2024.utils;
+
+import local.pkovalev.adventofcode.aoc2024.utils.MatrixPoint;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class Matrix<T> {
@@ -16,10 +20,53 @@ public class Matrix<T> {
         });
     }
 
+
+    public Optional<MatrixPoint> findFirst(T toFind) {
+        for (int row = 0; row < data.size(); row++ ) {
+            for (int col = 0; col < data.get(0).size(); col ++) {
+                if(data.get(row).get(col).equals(toFind)) {
+                    return Optional.of(new MatrixPoint(row, col));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<MatrixPoint> findAll(T toFind) {
+        ArrayList<MatrixPoint> ret = new ArrayList<>();
+        for (int row = 0; row < data.size(); row++ ) {
+            for (int col = 0; col < data.get(0).size(); col ++) {
+                if (data.get(row).get(col).equals(toFind)) {
+                    ret.add(new MatrixPoint(row, col));
+                }
+            }
+        }
+        return ret;
+    }
+
+    public List<MatrixPoint> findAll(T toFind, Comparator<T> cmp) {
+        ArrayList<MatrixPoint> ret = new ArrayList<>();
+        for (int row = 0; row < data.size(); row++ ) {
+            for (int col = 0; col < data.get(0).size(); col ++) {
+                if (cmp.compare(data.get(row).get(col), toFind) == 0) {
+                    ret.add(new MatrixPoint(row, col));
+                }
+            }
+        }
+        return ret;
+    }
+
+    public T get(MatrixPoint point) {
+        return get(point.getRow(), point.getCol());
+    }
+
     public T get(int row, int col) {
         return data.get(row).get(col);
     }
 
+    public void set(MatrixPoint point, T val) {
+        set(point.getRow(), point.getCol(), val);
+    }
     public void set(int row, int col, T value) {
         data.get(row).set(col, value);
     }
@@ -59,10 +106,10 @@ public class Matrix<T> {
         data.forEach( row -> {
             StringBuilder rowBuilder = new StringBuilder();
             row.forEach(item -> {
-                if(rowBuilder.length() != 0) rowBuilder.append(' ');
+                if(!rowBuilder.isEmpty()) rowBuilder.append(' ');
                 rowBuilder.append(item);
             });
-            if(ret.length() != 0) ret.append('\n');
+            ret.append('\n');
             ret.append(rowBuilder);
         });
         return ret.toString();

@@ -41,4 +41,9 @@ public class MatrixPoint {
     public boolean inside(int rowCount, int colCount) {
         return row >=0 && row < rowCount && col >= 0 && col < colCount;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", col, row);
+    }
 }

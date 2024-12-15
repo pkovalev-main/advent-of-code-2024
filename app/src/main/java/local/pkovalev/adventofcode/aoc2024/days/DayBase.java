@@ -1,12 +1,13 @@
 package local.pkovalev.adventofcode.aoc2024.days;
 
-import local.pkovalev.adventofcode.aoc2023.utils.Matrix;
+import local.pkovalev.adventofcode.aoc2024.utils.Matrix;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -51,7 +52,7 @@ public abstract class DayBase implements DayInterface {
         }
     }
 
-    Matrix<Character> dataAsCharMatrix() {
+    Matrix<Character> asCharMatrix(List<String> data) {
         Matrix<Character> ret = new Matrix<>(data.size(), data.get(0).length());
         IntStream.range(0, data.size()).forEach(row -> {
             for(int col = 0; col < data.get(row).length(); col++) {
