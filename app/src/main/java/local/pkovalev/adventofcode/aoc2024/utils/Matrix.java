@@ -13,11 +13,12 @@ public class Matrix<T> {
 
     public Matrix(int rows, int cols) {
         this.data = new ArrayList<>(rows);
-        IntStream.range(0, cols).forEach(index -> {
-            var row = new ArrayList<T>(cols);
-            IntStream.range(0, rows).forEach(i -> row.add(null));
-            data.add(row);
-        });
+        for (int row = 0; row < rows; row++ ) {
+            this.data.add(new ArrayList<T>(cols));
+            for (int col = 0; col < cols; col ++) {
+                this.data.get(row).add(null);
+            }
+        }
     }
 
 

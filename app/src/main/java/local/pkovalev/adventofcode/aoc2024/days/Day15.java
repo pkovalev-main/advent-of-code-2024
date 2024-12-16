@@ -13,6 +13,7 @@ public class Day15 extends DayBase {
 
     ArrayList<MatrixPoint> boxes = new ArrayList<>();
     Matrix<Character> map;
+    Matrix<Character> map2;
     MatrixPoint robot = new MatrixPoint(0,0);
     String movements = "";
 
@@ -24,9 +25,12 @@ public class Day15 extends DayBase {
     @Override
     public Long solvePartOne() {
         AtomicLong result = new AtomicLong(0L);
+        robot = map.findFirst('@').get();
         var steps = movements.toCharArray();
         for(char c : steps) {
-            moveIfPossible(robot, c);
+            if (canMove(robot, c)) {
+                move(robot, c);
+            }
         }
         log.info(map.toString());
         var boxes = map.findAll('O');
@@ -39,11 +43,26 @@ public class Day15 extends DayBase {
     @Override
     public Long solvePartTwo() {
         AtomicLong result = new AtomicLong(0L);
+        map = map2;
+        robot = map.findFirst('@').get();
+        log.info(map.toString());
+        var steps = movements.toCharArray();
+        for(char c : steps) {
+            if (canMove(robot, c)) {
+                move(robot, c);
+            }
+        }
+        log.info(map.toString());
+        var boxes = map.findAll('[');
+        boxes.forEach( index -> {
+            result.addAndGet(index.getCol() + 100L * index.getRow());
+        });
         return result.get();
     }
 
     void parseData(List<String> data) {
         List<String> mapData = new ArrayList<>();
+        List<String> mapData2 = new ArrayList<>();
         int i = 0;
         for(; i < data.size(); i++) {
             if(data.get(i).isBlank()) {
@@ -51,12 +70,23 @@ public class Day15 extends DayBase {
                 break;
             }
             mapData.add(data.get(i));
+            StringBuilder b = new StringBuilder();
+            for ( char c : data.get(i).toCharArray()) {
+                if ( c == '@') {
+                    b.append("@.");
+                }
+                else if (c == 'O') {
+                    b.append("[]");
+                }
+                else {
+                    b.append(c).append(c);
+                }
+            }
+            mapData2.add(b.toString());
         }
 
         map = asCharMatrix(mapData);
-
-        robot = map.findFirst('@').get();
-
+        map2 = asCharMatrix(mapData2);
 
         StringBuilder b = new StringBuilder();
         for(; i < data.size(); i++) {
@@ -65,7 +95,7 @@ public class Day15 extends DayBase {
         movements = b.toString();
     }
 
-    boolean moveIfPossible(MatrixPoint point, char direction) {
+    boolean canMove(MatrixPoint point, char direction) {
         var object = map.get(point);
         if(object.equals('.')) {
             return true;
@@ -73,32 +103,71 @@ public class Day15 extends DayBase {
         if(object.equals('#')) {
             return false;
         }
+        MatrixPoint newPoint = switch (direction) {
+            case '>' -> point.newRight();
+            case '<' -> point.newLeft();
+            case 'v' -> point.newBelow();
+            case '^' -> point.newAbove();
+            default -> null;
+        };
         if(object.equals('O') || object.equals('@')) {
-            MatrixPoint newPoint = null;
-            switch (direction) {
-                case '>':
-                    newPoint = point.newRight();
-                    break;
-                case '<':
-                    newPoint = point.newLeft();
-                    break;
-                case 'v':
-                    newPoint = point.newBelow();
-                    break;
-                case '^':
-                    newPoint = point.newAbove();
-                    break;
+            return canMove(newPoint, direction);
+        }
+        if(object.equals('[') || object.equals(']')) {
+            if (direction == '>' || direction == '<') {
+                return canMove(newPoint, direction);
             }
-            if(moveIfPossible(newPoint, direction)) {
+            else if (direction == '^' || direction == 'v') {
+                var secondPoint = object.equals('[') ? newPoint.newRight() : newPoint.newLeft();
+                return  canMove(newPoint, direction) && canMove(secondPoint, direction);
+            }
+        }
+        log.error("Object: {}", object);
+        throw new RuntimeException("Unexpected object");
+    }
+
+    void move(MatrixPoint point, char direction) {
+        var object = map.get(point);
+        if (object.equals('.')) {
+            return;
+        }
+        if (object.equals('#')) {
+            return;
+        }
+        MatrixPoint newPoint = switch (direction) {
+            case '>' -> point.newRight();
+            case '<' -> point.newLeft();
+            case 'v' -> point.newBelow();
+            case '^' -> point.newAbove();
+            default -> null;
+        };
+        if (object.equals('O') || object.equals('@')) {
+            move(newPoint, direction);
+            map.set(newPoint, object);
+            map.set(point, '.');
+            if (object.equals('@')) {
+                robot.setRow(newPoint.getRow());
+                robot.setCol(newPoint.getCol());
+            }
+            return;
+        }
+        if (object.equals('[') || object.equals(']')) {
+            if (direction == '>' || direction == '<') {
+                move(newPoint, direction);
                 map.set(newPoint, object);
                 map.set(point, '.');
-                if(object.equals('@')) {
-                    robot.setRow(newPoint.getRow());
-                    robot.setCol(newPoint.getCol());
-                }
-                return true;
+            } else if (direction == '^' || direction == 'v') {
+                move(newPoint, direction);
+                map.set(newPoint, object);
+                map.set(point, '.');
+
+                var secondPoint = object.equals('[') ? newPoint.newRight() : newPoint.newLeft();
+                var secondObject = map.get(object.equals('[') ? point.newRight() : point.newLeft());
+                move(secondPoint, direction);
+                map.set(secondPoint, secondObject);
+                map.set(object.equals('[') ? point.newRight() : point.newLeft(), '.');
             }
-            return false;
+            return;
         }
         log.error("Object: {}", object);
         throw new RuntimeException("Unexpected object");
