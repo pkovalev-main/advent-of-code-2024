@@ -1,4 +1,4 @@
-package local.pkovalev.adventofcode.aoc2023.utils;
+package local.pkovalev.adventofcode.aoc2024.utils;
 
 public enum Direction {
     UP(1 << 1),
@@ -22,4 +22,23 @@ public enum Direction {
 
     public static final int  V_MASK = UP.value | DOWN.value;
     public static final int  H_MASK = LEFT.value | RIGHT.value;
+
+    public Direction clockwise() {
+        return switch (this) {
+            case UP -> RIGHT;
+            case RIGHT -> DOWN;
+            case DOWN -> LEFT;
+            case LEFT -> UP;
+        };
+    }
+
+    public Direction counterclockwise() {
+        return switch (this) {
+            case UP -> LEFT;
+            case RIGHT -> UP;
+            case DOWN -> RIGHT;
+            case LEFT -> DOWN;
+        };
+    }
+
 }
