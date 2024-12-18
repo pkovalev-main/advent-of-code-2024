@@ -72,6 +72,10 @@ public class Matrix<T> {
         data.get(row).set(col, value);
     }
 
+    public void fillWith(T value) {
+       data.forEach( row -> row.replaceAll(t -> value));
+    }
+
     public List<T> getRow(int index) {
         return new ArrayList<>(data.get(index));
     }
