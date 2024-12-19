@@ -27,8 +27,8 @@ public class Day19 extends DayBase {
     public Long solvePartOne() {
         AtomicLong result = new AtomicLong(0L);
         result.addAndGet(patterns.stream().filter( chunk -> {
-            var cache = combinations(chunk);
-            return cache > 0;
+            var combinations = combinations(chunk);
+            return combinations > 0;
         }).count());
         return result.get();
     }
