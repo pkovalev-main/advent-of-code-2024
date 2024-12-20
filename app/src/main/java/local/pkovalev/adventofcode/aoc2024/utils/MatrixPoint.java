@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -36,6 +38,10 @@ public class MatrixPoint {
     }
     public MatrixPoint newBelow() {
         return new MatrixPoint(row + 1, col);
+    }
+
+    public List<MatrixPoint> newNeighbours() {
+       return List.of(newAbove(), newRight(), newBelow(), newLeft());
     }
 
     public boolean inside(int rowCount, int colCount) {
