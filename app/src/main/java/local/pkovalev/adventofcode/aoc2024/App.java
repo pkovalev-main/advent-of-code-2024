@@ -13,7 +13,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        DayInterface day = new Day22();
+        DayInterface day = new Day23();
         day.init();
 
         var timeStart = Instant.now();
